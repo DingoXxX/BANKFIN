@@ -1,0 +1,4 @@
+All rights reserved.
+
+This software and its source code are the intellectual property of the author.
+Unauthorized copying, distribution, modification, or use of any part of this codebase is strictly prohibited.

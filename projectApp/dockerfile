@@ -1,0 +1,35 @@
+# Dockerfile
+
+# 1. Base image
+FROM python:3.10-slim
+
+# 2. Set working directory
+WORKDIR /app
+RUN mkdir -p /app/uploads
+# 3. Install dependencies
+COPY requirements.txt .
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      gcc \
+      libffi-dev \
+      build-essential \
+      libpq-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+
+
+RUN pip install --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt
+
+# 4. Copy application code
+COPY . .
+
+# 5. Open port (adjust if needed)
+EXPOSE 8000
+
+# 6. Launch via Uvicorn
+#    Assumes your FastAPI app is in app/main.py and defined as `app = FastAPI()`
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+

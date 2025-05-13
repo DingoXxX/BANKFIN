@@ -1,0 +1,4 @@
+DATABASE_URL=postgresql://user:password@db:5432/bankfin
+JWT_SECRET=your-super-secret-key
+KYC_API_URL=https://your-kyc-provider.com/api/verify
+KYC_API_KEY=your-kyc-provider-secret

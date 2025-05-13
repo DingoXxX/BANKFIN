@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+certs/server.key
+certs/server.crt
+banking.db

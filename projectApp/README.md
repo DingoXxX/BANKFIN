@@ -1,3 +1,2 @@
-# projectApp
-
-This is the banking app project structure.
+# Full Banking API
+Unified system combining auth, KYC, payments, licenses, webhooks, and database.

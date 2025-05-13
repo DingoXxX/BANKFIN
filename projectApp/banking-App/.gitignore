@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+venv/
+*.crt
+*.key
+.DS_Store
+.vscode/
+banking.db
