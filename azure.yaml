@@ -1,0 +1,10 @@
+name: bankfin
+services:
+  bankfin-api:
+    language: python
+    project: ./projectApp
+    host: containerapp
+  bankfin-frontend:
+    language: js
+    project: ./frontend
+    host: staticwebapp

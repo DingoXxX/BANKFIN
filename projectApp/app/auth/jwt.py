@@ -4,11 +4,19 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 
-from ..database import get_db
-from ..models import User
-from . import pwd_context
-from ..config import settings
+from app.database import get_db
+from app.models import User
+from app.config import settings
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -40,3 +48,18 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     if user is None:
         raise credentials_exception
     return user
+
+async def get_admin_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    user = await get_current_user(token, db)
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied. Admin privileges required.",
+        )
+    return user
+
+def create_admin_token(user: User) -> str:
+    """Create a token with admin privileges and longer expiration"""
+    expires = timedelta(hours=settings.ADMIN_TOKEN_EXPIRY)
+    to_encode = {"sub": str(user.id), "is_admin": True}
+    return create_access_token(to_encode, expires)

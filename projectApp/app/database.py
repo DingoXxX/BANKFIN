@@ -2,7 +2,7 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from .config import settings
+from app.config import settings
 
 # Pull the DATABASE_URL from .env via Pydantic BaseSettings
 DATABASE_URL = str(settings.DATABASE_URL)

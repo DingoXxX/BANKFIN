@@ -5,10 +5,13 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import OperationalError
-from .database import engine, Base
-from .routes.auth import router as auth_router
-from .routes.accounts import router as accounts_router
-from .routes.deposit import router as deposit_router
+from app.database import engine, Base, get_db
+from app.models import SystemLog  # Add this import
+from app.routes.auth import router as auth_router
+from app.routes.accounts import router as accounts_router
+from app.routes.deposit import router as deposit_router
+from app.routes.transactions import router as transactions_router
+from app.routes.admin import router as admin_router
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -24,11 +27,44 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=["https://yourdomain.com"],  # In production, replace with specific origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add logging middleware
+@app.middleware("http")
+async def log_requests(request, call_next):
+    # Log incoming request
+    path = request.url.path
+    method = request.method
+    
+    # Skip logging for certain paths (e.g. health checks)
+    if not path.startswith(("/health", "/static", "/favicon.ico")):
+        db = next(get_db())
+        log = SystemLog(
+            level="INFO",
+            service="api",
+            message=f"{method} {path}"
+        )
+        db.add(log)
+        db.commit()
+    
+    response = await call_next(request)
+    
+    # Log errors
+    if response.status_code >= 400:
+        db = next(get_db())
+        log = SystemLog(
+            level="ERROR",
+            service="api",
+            message=f"Error {response.status_code} on {method} {path}"
+        )
+        db.add(log)
+        db.commit()
+    
+    return response
 
 # Event: On startup, wait for DB & create tables
 @app.on_event("startup")
@@ -59,10 +95,22 @@ def on_startup():
 app.include_router(auth_router)
 app.include_router(accounts_router)
 app.include_router(deposit_router)
-from .routes.transactions import router as transactions_router
 app.include_router(transactions_router)
+app.include_router(admin_router)
 
 # Health check endpoint
 @app.get("/", tags=["health"])
 async def health_check():
     return {"status": "OK"}
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
+# Serve static files (frontend)
+frontend_path = os.path.join(os.path.dirname(__file__), '..', 'banking-App')
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
+# Serve index.html at root
+@app.get("/index.html")
+async def serve_frontend():
+    return FileResponse(os.path.join(frontend_path, "index.html"))

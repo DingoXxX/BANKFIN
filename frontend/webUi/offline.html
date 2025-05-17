@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Offline - Bankfin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="webUi.css">
+  <style>
+    .offline-content {
+      text-align: center;
+      padding: 2rem;
+    }
+    .offline-icon {
+      font-size: 4rem;
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="offline-content">
+      <div class="offline-icon">📡</div>
+      <h1>You're Offline</h1>
+      <p>Please check your internet connection and try again.</p>
+      <button onclick="window.location.reload()">Retry</button>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from .. import schemas, models, database
-from ..auth.jwt import get_current_user
+from app import schemas, models, database
+from app.auth.jwt import get_current_user
 
 router = APIRouter(
     prefix="/transactions",

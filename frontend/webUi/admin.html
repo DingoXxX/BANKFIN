@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Bankfin Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="webUi.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="admin-panel">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-logo">Bankfin Admin</div>
+      <nav class="admin-nav">
+        <button data-view="dashboard" class="active">Dashboard</button>
+        <button data-view="users">Users</button>
+        <button data-view="transactions">Transactions</button>
+        <button data-view="kyc">KYC Requests</button>
+        <button data-view="logs">System Logs</button>
+        <button data-view="settings">Settings</button>
+      </nav>
+    </aside>
+    <main class="admin-main">
+      <div id="adminContent"></div>
+    </main>
+  </div>
+  <script type="module">
+    import { BankfinAdmin } from './admin.js';
+    new BankfinAdmin();
+  </script>
+</body>
+</html>

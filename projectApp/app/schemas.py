@@ -1,8 +1,9 @@
 # app/schemas.py
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Literal, Optional
 from datetime import datetime
+from app.models import KycStatusEnum
 
 class ErrorResponse(BaseModel):
     code: int
@@ -68,3 +69,35 @@ class TransactionResponse(TransactionBase):
 
     class Config:
         from_attributes = True
+
+# ——— Admin ———
+
+class AdminStats(BaseModel):
+    totalUsers: int
+    transactionsLast24h: int
+    pendingKYC: int
+    systemHealth: str
+
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    kyc_status: str
+    join_date: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class KYCResponse(BaseModel):
+    id: int
+    user_id: int
+    status: str
+    submitted_at: datetime
+    reviewed_at: Optional[datetime] = None
+    model_config = ConfigDict(from_attributes=True)
+
+class SystemLogResponse(BaseModel):
+    id: int
+    timestamp: datetime
+    level: str
+    service: str
+    message: str
+    model_config = ConfigDict(from_attributes=True)
